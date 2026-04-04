@@ -7,67 +7,9 @@ from plotly.subplots import make_subplots
 
 from importance_3d_plot import BASE_FOLDERS, find_supported_csvs, load_importance_csv
 
-# Page config
-st.set_page_config(
-    page_title="Importance Atlas",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Custom CSS
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #23160f;
-        margin-bottom: 0.5rem;
-    }
-    .sub-header {
-        font-size: 1rem;
-        color: #6d584b;
-        margin-bottom: 2rem;
-    }
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 2px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        white-space: pre-wrap;
-        background-color: #f3dfd2;
-        border-radius: 4px 4px 0 0;
-        gap: 1px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #8c2f39 !important;
-        color: white !important;
-    }
-    .control-container {
-        background-color: #f6efe6;
-        padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-        border: 1px solid #e0d5c8;
-    }
-    .stSelectbox, .stMultiselect {
-        font-size: 0.9rem;
-    }
-    .stSelectbox > div > div {
-        font-size: 0.9rem;
-    }
-    .stMultiselect > div > div {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Constants
 SENSOR_DATA_PATH = Path("data/machine_and_movement.csv")
 ANNOT_TIMESTEPS = [150, 340, 820, 1280]
+
 BENDING_ONLY_FOLDER = "a116ded8d403424489c23809a916fbd2"
 
 EXPERIMENT_LABELS = {
@@ -81,6 +23,99 @@ EXPERIMENT_LABELS = {
         "LSTM | Feature Attention | Bahdanau Attention | No Sampling | Bending Only"
     ),
 }
+
+# Page config
+st.set_page_config(
+    page_title="Importance Atlas",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+DARK_MODE = False
+
+# Custom CSS
+st.markdown("""
+<style>
+body, .main, .block-container, .stAppViewContainer, .element-container {
+    background-color: #f0f0f0 !important;
+    color: #000000 !important;
+}
+.main-header {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 0.5rem;
+}
+.sub-header {
+    font-size: 1rem;
+    color: #333333;
+    margin-bottom: 2rem;
+}
+.stTabs [role="tablist"], .stTabs [data-baseweb="tab-list"] {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+.stTabs [role="tab"], .stTabs [data-baseweb="tab"] {
+    height: auto;
+    min-height: 66px;
+    padding: 16px 32px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(0,0,0,0.12);
+    color: #111111;
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    text-transform: none;
+}
+.stTabs [role="tab"]:hover, .stTabs [data-baseweb="tab"]:hover {
+    background: rgba(255,255,255,1);
+    border-color: rgba(0,0,0,0.18);
+}
+.stTabs [role="tab"][aria-selected="true"], .stTabs [data-baseweb="tab"][aria-selected="true"] {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+    font-weight: 900;
+    font-size: 20px;
+}
+.stSelectbox, .stMultiselect {
+    background-color: rgba(255,255,255,0.9) !important;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+.stSelectbox label, .stMultiselect label {
+    color: #000000 !important;
+    font-weight: 600;
+}
+.stSelectbox > div > div, .stMultiselect > div > div {
+    background-color: rgba(255,255,255,0.9) !important;
+    color: #000000 !important;
+}
+.stSelectbox > div > div > div, .stMultiselect > div > div > div {
+    color: #000000 !important;
+}
+.stMarkdown, .stText {
+    color: #000000 !important;
+}
+.stWarning {
+    background-color: rgba(255,255,255,0.9) !important;
+    color: #000000 !important;
+    border: 1px solid #ffcc00;
+}
+.stError {
+    background-color: rgba(255,255,255,0.9) !important;
+    color: #000000 !important;
+    border: 1px solid #ff4444;
+}
+</style>
+""", unsafe_allow_html=True)
 
 def normalize_zero_one(values):
     values = np.asarray(values, dtype=float)
@@ -239,17 +274,30 @@ def build_heatmap(x_values, y_values, z_values, x_label, title_kind, selected_se
         col=1,
     )
 
+    bg_color = "rgba(30,30,30,1)" if DARK_MODE else "#f0f0f0"
+    font_color = "#ffffff" if DARK_MODE else "#23160f"
+    grid_color = "rgba(255,255,255,0.12)" if DARK_MODE else "rgba(148,148,148,0.18)"
+
     fig.update_layout(
         height=760,
         width=1650,
         autosize=False,
         margin=dict(l=20, r=20, t=50, b=20),
-        paper_bgcolor="rgba(255,255,255,0)",
-        plot_bgcolor="rgba(255,255,255,0)",
-        font=dict(color="#23160f", family="Arial, Helvetica, sans-serif"),
-        title_font=dict(size=24, color="#23160f"),
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        font=dict(color=font_color, family="Arial, Helvetica, sans-serif"),
+        title_text="",
+        title=dict(text="", x=0.5),
+        title_font=dict(size=24, color=font_color),
     )
-    fig.update_xaxes(title_text=x_label, showgrid=False, zeroline=False, row=2, col=1)
+    fig.update_xaxes(title_text=x_label or "", showgrid=False, zeroline=False, row=2, col=1,
+                     title_font=dict(color=font_color), tickfont=dict(color=font_color))
+    fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1,
+                     title_font=dict(color=font_color), tickfont=dict(color=font_color))
+    fig.update_yaxes(title_text="Sensors", showgrid=False, zeroline=False, row=1, col=1,
+                     title_font=dict(color=font_color), tickfont=dict(color=font_color))
+    fig.update_yaxes(title_text="Angle Number", showgrid=False, zeroline=False, row=2, col=1,
+                     title_font=dict(color=font_color), tickfont=dict(color=font_color))
     fig.update_xaxes(showgrid=False, zeroline=False, row=1, col=1)
     fig.update_yaxes(title_text="Sensors", showgrid=False, zeroline=False, row=1, col=1)
     fig.update_yaxes(title_text="Angle Number", showgrid=False, zeroline=False, row=2, col=1)
@@ -311,49 +359,69 @@ def build_surface(x_values, y_values, z_values, x_label, title_kind, selected_se
         yaxis_title="Angle Number / Sensors",
         zaxis_title="Importance",
         xaxis=dict(
-            showbackground=False,
-            showline=False,
-            zeroline=False,
-            showgrid=False,
+            showbackground=True,
+            backgroundcolor="rgba(255,255,255,0.06)",
+            showline=True,
+            zeroline=True,
+            showgrid=True,
+            gridcolor="rgba(148, 148, 148, 0.18)",
+            zerolinecolor="rgba(148, 148, 148, 0.22)",
         ),
         yaxis=dict(
             tickvals=tickvals,
             ticktext=ticktext,
-            showbackground=False,
-            showline=False,
-            zeroline=False,
-            showgrid=False,
+            showbackground=True,
+            backgroundcolor="rgba(255,255,255,0.06)",
+            showline=True,
+            zeroline=True,
+            showgrid=True,
+            gridcolor="rgba(148, 148, 148, 0.18)",
+            zerolinecolor="rgba(148, 148, 148, 0.22)",
         ),
         zaxis=dict(
-            showbackground=False,
-            showline=False,
-            zeroline=False,
-            showgrid=False,
+            showbackground=True,
+            backgroundcolor="rgba(255,255,255,0.06)",
+            showline=True,
+            zeroline=True,
+            showgrid=True,
+            gridcolor="rgba(148, 148, 148, 0.18)",
+            zerolinecolor="rgba(148, 148, 148, 0.22)",
         ),
     )
     if camera is not None:
         scene["camera"] = camera
 
+    bg_color = "rgba(30,30,30,1)" if DARK_MODE else "#f0f0f0"
+    font_color = "#ffffff" if DARK_MODE else "#23160f"
+    axis_color = "#ffffff" if DARK_MODE else "#23160f"
+    grid_color = "rgba(255,255,255,0.18)" if DARK_MODE else "rgba(148,148,148,0.18)"
+
+    scene["xaxis"].update(tickfont=dict(color=axis_color), gridcolor=grid_color)
+    scene["yaxis"].update(tickfont=dict(color=axis_color), gridcolor=grid_color)
+    scene["zaxis"].update(tickfont=dict(color=axis_color), gridcolor=grid_color)
+
     fig.update_layout(
         scene=scene,
+        scene_bgcolor=bg_color,
         height=980,
         autosize=True,
         margin=dict(l=10, r=10, t=50, b=10),
         showlegend=False,
         uirevision="importance_surface_view",
-        paper_bgcolor="rgba(255,255,255,0)",
-        font=dict(color="#23160f", family="Arial, Helvetica, sans-serif"),
-        title_font=dict(size=24, color="#23160f"),
+        title_text="",
+        title=dict(text="", x=0.5),
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        font=dict(color=font_color, family="Arial, Helvetica, sans-serif"),
+        title_font=dict(size=24, color=font_color),
     )
     return fig
 
 # Main app
 def main():
     st.markdown('<h1 class="main-header">Temporal Importance Analysis for Tube Bending Process</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Interactive 3D importance surface and heatmap explorer with sensor overlays.</p>', unsafe_allow_html=True)
 
     # Controls at top
-    st.markdown('<div class="control-container">', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 1, 1.2])
 
     with col1:
@@ -416,23 +484,20 @@ def main():
     tab1, tab2, tab3 = st.tabs(["3D Surface", "Heatmap", "Videos"])
 
     with tab1:
-        st.subheader("3D Surface View")
         fig_surface = build_surface(
             x_values, y_values, z_values, x_label, title_kind,
             selected_sensors, Path(selected_importance).parent.name
         )
-        st.plotly_chart(fig_surface, use_container_width=True)
+        st.plotly_chart(fig_surface, width='stretch')
 
     with tab2:
-        st.subheader("Heatmap View")
         fig_heatmap = build_heatmap(
             x_values, y_values, z_values, x_label, title_kind,
             selected_sensors, Path(selected_importance).parent.name
         )
-        st.plotly_chart(fig_heatmap, use_container_width=True)
+        st.plotly_chart(fig_heatmap, width='stretch')
 
     with tab3:
-        st.subheader("Videos")
         video_path = find_matching_video(folder, selected_importance)
         if video_path and video_path.exists():
             st.video(str(video_path))

@@ -415,7 +415,7 @@ app.layout = html.Div(
         html.Div(
             [
                 html.Div(
-                    "Importance Atlas",
+                    "Temporal Importance Analysis for Tube Bending Process",
                     style={
                         "fontSize": "38px",
                         "fontWeight": "700",
