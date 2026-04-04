@@ -45,6 +45,19 @@ st.markdown("""
         background-color: #8c2f39 !important;
         color: white !important;
     }
+    .control-container {
+        background-color: #f6efe6;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        border: 1px solid #e0d5c8;
+    }
+    .stSelectbox, .stMultiselect {
+        font-size: 0.9rem;
+    }
+    .stSelectbox > div > div {
+        font-size: 0.9rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -335,10 +348,11 @@ def main():
     st.markdown('<h1 class="main-header">Importance Atlas</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Interactive 3D importance surface and heatmap explorer with sensor overlays.</p>', unsafe_allow_html=True)
 
-    # Sidebar
-    with st.sidebar:
-        st.header("Controls")
+    # Controls at top
+    st.markdown('<div class="control-container">', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 1, 2])
 
+    with col1:
         existing_folders = [folder for folder in BASE_FOLDERS if Path(folder).exists()]
         default_folder = existing_folders[0] if existing_folders else None
 
@@ -346,17 +360,20 @@ def main():
         selected_folder_label = st.selectbox(
             "Experiment",
             options=list(folder_options.keys()),
-            index=0 if default_folder else None
+            index=0 if default_folder else None,
+            key="folder_select"
         )
         folder = folder_options.get(selected_folder_label)
 
+    with col2:
         importance_options = build_importance_options(folder) if folder else []
         if importance_options:
             importance_labels = [opt["label"] for opt in importance_options]
             selected_importance_label = st.selectbox(
                 "Importance Type",
                 options=importance_labels,
-                index=0
+                index=0,
+                key="importance_select"
             )
             selected_importance = next(
                 opt["value"] for opt in importance_options
@@ -366,14 +383,18 @@ def main():
             selected_importance = None
             st.warning("No importance files found for this experiment.")
 
+    with col3:
         _, sensor_values, _ = load_reference_sensor_frame()
         sensor_options = sensor_values.columns.tolist() if sensor_values is not None else []
         selected_sensors = st.multiselect(
             "Sensors",
             options=sensor_options,
             default=sensor_options,
-            help="Select sensors to overlay on the plots"
+            help="Select sensors to overlay on the plots",
+            key="sensor_select"
         )
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Main content
     if not selected_importance:
