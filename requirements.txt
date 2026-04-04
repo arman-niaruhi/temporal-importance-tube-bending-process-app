@@ -1,7 +1,8 @@
 dash>=2.0.0
+flask>=2.0.0
+gunicorn>=20.0.0
+matplotlib>=3.5.0
 numpy>=1.20.0
 pandas>=1.3.0
 plotly>=5.0.0
-flask>=2.0.0
-gunicorn
-streamlit
+streamlit>=1.0.0
