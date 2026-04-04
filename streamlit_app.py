@@ -58,6 +58,10 @@ st.markdown("""
     .stSelectbox > div > div {
         font-size: 0.9rem;
     }
+    .stMultiselect > div > div {
+        max-height: 200px;
+        overflow-y: auto;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -345,12 +349,12 @@ def build_surface(x_values, y_values, z_values, x_label, title_kind, selected_se
 
 # Main app
 def main():
-    st.markdown('<h1 class="main-header">Importance Atlas</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">Temporal Importance Analysis for Tube Bending Process</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Interactive 3D importance surface and heatmap explorer with sensor overlays.</p>', unsafe_allow_html=True)
 
     # Controls at top
     st.markdown('<div class="control-container">', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 1, 2])
+    col1, col2, col3 = st.columns([1, 1, 1.2])
 
     with col1:
         existing_folders = [folder for folder in BASE_FOLDERS if Path(folder).exists()]
