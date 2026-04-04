@@ -26,7 +26,7 @@ EXPERIMENT_LABELS = {
 
 # Page config
 st.set_page_config(
-    page_title="Importance Atlas",
+    page_title="Temporal Importance Analysis for Tube Bending Process",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
