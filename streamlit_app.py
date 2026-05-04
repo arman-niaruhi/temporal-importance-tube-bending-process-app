@@ -14,10 +14,13 @@ BENDING_ONLY_FOLDER = "a116ded8d403424489c23809a916fbd2"
 
 EXPERIMENT_LABELS = {
     "8ecd70f401c845779e58e60c40729ff6": (
-        "TCN-LSTM | No Feature Attention | MLP Attention | No Sampling"
+        "TCN-LSTM | No Feature Attention | Bahdanau Attention | No Sampling"
+    ),
+    "af204c40943647c7b1dfef9b5034ad68": (
+        "LSTM | No Feature Attention | Bahdanau Attention | Resampled to 400 Windows"
     ),
     "25f4112799414b94ad1891d39122b9eb": (
-        "LSTM | No Feature Attention | Bahdanau Attention | Resampled to 400 Windows"
+        "LSTM | No Feature Attention | MLP Attention | Resampled to 400 Windows"
     ),
     "a116ded8d403424489c23809a916fbd2": (
         "LSTM | Feature Attention | Bahdanau Attention | No Sampling | Bending Only"
